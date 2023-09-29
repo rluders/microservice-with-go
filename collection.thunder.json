@@ -1,0 +1,191 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Microservice Tutorial",
+    "dateExported": "2023-09-29T12:51:00.758Z",
+    "version": "1.1",
+    "folders": [
+        {
+            "_id": "9e6c8cfe-cabe-422e-bfc8-7800a62ea5c2",
+            "name": "menu-service",
+            "containerId": "",
+            "created": "2023-09-10T21:19:02.872Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "a8509bcd-9860-40df-90f5-8e8a9ece19a0",
+            "name": "items",
+            "containerId": "9e6c8cfe-cabe-422e-bfc8-7800a62ea5c2",
+            "created": "2023-09-29T12:50:20.821Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "dc0d19f0-7794-445e-ad0e-2865abbb8032",
+            "name": "categories",
+            "containerId": "9e6c8cfe-cabe-422e-bfc8-7800a62ea5c2",
+            "created": "2023-09-29T12:50:35.546Z",
+            "sortNum": 30000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "8b575349-dd69-487f-8a29-67d8dc20d5b1",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "a8509bcd-9860-40df-90f5-8e8a9ece19a0",
+            "name": "List Items",
+            "url": "http://localhost:8080/items",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-09-10T21:19:11.567Z",
+            "modified": "2023-09-10T21:22:35.903Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "b4babd5b-5564-4c4a-b14e-15521eb61baf",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "dc0d19f0-7794-445e-ad0e-2865abbb8032",
+            "name": "List Categories",
+            "url": "http://localhost:8080/categories",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2023-09-27T12:45:10.467Z",
+            "modified": "2023-09-27T12:45:28.266Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "b12fb470-ce3b-49ad-b24d-7462c45a0ed0",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "a8509bcd-9860-40df-90f5-8e8a9ece19a0",
+            "name": "Get Item",
+            "url": "http://localhost:8080/items/1",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2023-09-10T21:20:03.174Z",
+            "modified": "2023-09-10T21:22:16.379Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "4009ea94-eb63-4e87-9c3c-b5d8c6d91846",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "dc0d19f0-7794-445e-ad0e-2865abbb8032",
+            "name": "Get Category",
+            "url": "http://localhost:8080/categories/1",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2023-09-27T12:16:54.786Z",
+            "modified": "2023-09-27T12:34:03.246Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "c0967b72-6753-4bda-8e51-4afd9d90033e",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "a8509bcd-9860-40df-90f5-8e8a9ece19a0",
+            "name": "Create Item",
+            "url": "http://localhost:8080/items",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-09-10T21:20:24.132Z",
+            "modified": "2023-09-10T21:21:24.771Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "15f1ac4f-e8f4-4d8a-a290-eec61e269e71",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "dc0d19f0-7794-445e-ad0e-2865abbb8032",
+            "name": "Create Category",
+            "url": "http://localhost:8080/categories",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2023-09-20T13:01:13.836Z",
+            "modified": "2023-09-28T16:30:00.147Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"AAA\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "a0749454-8b3c-46ae-98da-526292c0e2c4",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "a8509bcd-9860-40df-90f5-8e8a9ece19a0",
+            "name": "Update Item",
+            "url": "http://localhost:8080/items/1",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-09-10T21:20:40.264Z",
+            "modified": "2023-09-10T21:20:49.041Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "ff1ec053-3e8f-43d0-932b-43c6135d319d",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "dc0d19f0-7794-445e-ad0e-2865abbb8032",
+            "name": "Update Category",
+            "url": "http://localhost:8080/categories/5",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2023-09-28T16:14:53.087Z",
+            "modified": "2023-09-28T16:19:11.319Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Sorvetes\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "49764511-b299-4d15-b36c-b0033d04b575",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "a8509bcd-9860-40df-90f5-8e8a9ece19a0",
+            "name": "Delete Item",
+            "url": "http://localhost:8080/items/1",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-09-10T21:20:57.548Z",
+            "modified": "2023-09-10T21:21:07.008Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "c1a1434b-fdf2-4447-88f3-0f621571f18a",
+            "colId": "d0245473-3288-4ff1-84ee-d20c89864571",
+            "containerId": "dc0d19f0-7794-445e-ad0e-2865abbb8032",
+            "name": "Delete Category",
+            "url": "http://localhost:8080/categories/5",
+            "method": "DELETE",
+            "sortNum": 50000,
+            "created": "2023-09-28T15:50:51.748Z",
+            "modified": "2023-09-28T16:21:24.581Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        }
+    ]
+}
