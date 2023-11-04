@@ -56,10 +56,19 @@ func NewItemRepository(db *sqlx.DB) *ItemRepository {
 	}
 }
 
-func (r *ItemRepository) CreateItem(item *domain.Item) error {
-	stmt, ok := r.statements[createItem]
+func (r *ItemRepository) statement(query string) (*sqlx.Stmt, error) {
+	stmt, ok := r.statements[query]
 	if !ok {
-		return fmt.Errorf("prepared statement '%s' not found", createItem)
+		return nil, fmt.Errorf("prepared statement '%s' not found", query)
+	}
+
+	return stmt, nil
+}
+
+func (r *ItemRepository) CreateItem(item *domain.Item) error {
+	stmt, err := r.statement(createItem)
+	if err != nil {
+		return err
 	}
 
 	if err := stmt.Get(item, item.Name, item.Description, item.Price); err != nil {
@@ -70,9 +79,9 @@ func (r *ItemRepository) CreateItem(item *domain.Item) error {
 }
 
 func (r *ItemRepository) UpdateItem(item *domain.Item) error {
-	stmt, ok := r.statements[updateItem]
-	if !ok {
-		return fmt.Errorf("prepared statement '%s' not found", updateItem)
+	stmt, err := r.statement(updateItem)
+	if err != nil {
+		return err
 	}
 
 	item.UpdatedAt = time.Now()
@@ -92,9 +101,9 @@ func (r *ItemRepository) UpdateItem(item *domain.Item) error {
 }
 
 func (r *ItemRepository) DeleteItem(itemID int) error {
-	stmt, ok := r.statements[deleteItem]
-	if !ok {
-		return fmt.Errorf("prepared statement '%s' not found", deleteItem)
+	stmt, err := r.statement(deleteItem)
+	if err != nil {
+		return err
 	}
 
 	if _, err := stmt.Exec(itemID); err != nil {
@@ -105,9 +114,9 @@ func (r *ItemRepository) DeleteItem(itemID int) error {
 }
 
 func (r *ItemRepository) FindItemByID(itemID int) (*domain.Item, error) {
-	stmt, ok := r.statements[getItem]
-	if !ok {
-		return nil, fmt.Errorf("prepared statement '%s' not found", getItem)
+	stmt, err := r.statement(getItem)
+	if err != nil {
+		return nil, err
 	}
 
 	item := &domain.Item{}
@@ -119,9 +128,9 @@ func (r *ItemRepository) FindItemByID(itemID int) (*domain.Item, error) {
 }
 
 func (r *ItemRepository) ListItems() ([]*domain.Item, error) {
-	stmt, ok := r.statements[listItem]
-	if !ok {
-		return nil, fmt.Errorf("prepared statement '%s' not found", listItem)
+	stmt, err := r.statement(listItem)
+	if err != nil {
+		return nil, err
 	}
 
 	var items []*domain.Item

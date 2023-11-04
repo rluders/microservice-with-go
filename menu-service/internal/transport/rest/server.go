@@ -24,11 +24,6 @@ func NewServer(cfg *config.ServerHTTP, router *mux.Router) (*Server, error) {
 		return nil, fmt.Errorf("invalid server router")
 	}
 
-	// @TODO Remove me
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "It is working!")
-	}).Methods(http.MethodGet)
-
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	return &Server{
 		Server: &http.Server{

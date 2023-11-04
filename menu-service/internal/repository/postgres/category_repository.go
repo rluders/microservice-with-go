@@ -65,10 +65,19 @@ func NewCategoryRepository(db *sqlx.DB) *CategoryRepository {
 	}
 }
 
-func (r *CategoryRepository) CreateCategory(category *domain.Category) error {
-	stmt, ok := r.statements[createCategory]
+func (r *CategoryRepository) statement(query string) (*sqlx.Stmt, error) {
+	stmt, ok := r.statements[query]
 	if !ok {
-		return fmt.Errorf("prepared statement '%s' not found", createCategory)
+		return nil, fmt.Errorf("prepared statement '%s' not found", query)
+	}
+
+	return stmt, nil
+}
+
+func (r *CategoryRepository) CreateCategory(category *domain.Category) error {
+	stmt, err := r.statement(createCategory)
+	if err != nil {
+		return err
 	}
 
 	if err := stmt.Get(category, category.Name); err != nil {
@@ -82,9 +91,9 @@ func (r *CategoryRepository) CreateCategory(category *domain.Category) error {
 }
 
 func (r *CategoryRepository) UpdateCategory(category *domain.Category) error {
-	stmt, ok := r.statements[updateCategory]
-	if !ok {
-		return fmt.Errorf("prepared statement '%s' not found", updateCategory)
+	stmt, err := r.statement(updateCategory)
+	if err != nil {
+		return err
 	}
 
 	category.UpdatedAt = time.Now()
@@ -105,9 +114,9 @@ func (r *CategoryRepository) UpdateCategory(category *domain.Category) error {
 }
 
 func (r *CategoryRepository) DeleteCategory(categoryID int) error {
-	stmt, ok := r.statements[deleteCategory]
-	if !ok {
-		return fmt.Errorf("prepared statement '%s' not found", deleteCategory)
+	stmt, err := r.statement(deleteCategory)
+	if err != nil {
+		return err
 	}
 
 	if _, err := stmt.Exec(categoryID); err != nil {
@@ -118,9 +127,9 @@ func (r *CategoryRepository) DeleteCategory(categoryID int) error {
 }
 
 func (r *CategoryRepository) FindCategoryByID(categoryID int) (*domain.Category, error) {
-	stmt, ok := r.statements[getCategory]
-	if !ok {
-		return nil, fmt.Errorf("prepared statement '%s' not found", getCategory)
+	stmt, err := r.statement(getCategory)
+	if err != nil {
+		return nil, err
 	}
 
 	category := &domain.Category{}
@@ -132,9 +141,9 @@ func (r *CategoryRepository) FindCategoryByID(categoryID int) (*domain.Category,
 }
 
 func (r *CategoryRepository) ListCategories() ([]*domain.Category, error) {
-	stmt, ok := r.statements[listCategory]
-	if !ok {
-		return nil, fmt.Errorf("prepared statement '%s' not found", listCategory)
+	stmt, err := r.statement(listCategory)
+	if err != nil {
+		return nil, err
 	}
 
 	var categories []*domain.Category
@@ -146,9 +155,9 @@ func (r *CategoryRepository) ListCategories() ([]*domain.Category, error) {
 }
 
 func (r *CategoryRepository) AddItemToCategory(itemID, categoryID int) error {
-	stmt, ok := r.statements[addItem]
-	if !ok {
-		return fmt.Errorf("prepared statement '%s' not found", addItem)
+	stmt, err := r.statement(addItem)
+	if err != nil {
+		return err
 	}
 
 	if _, err := stmt.Exec(itemID, categoryID); err != nil {
@@ -159,9 +168,9 @@ func (r *CategoryRepository) AddItemToCategory(itemID, categoryID int) error {
 }
 
 func (r *CategoryRepository) RemoveItemFromCategory(itemID, categoryID int) error {
-	stmt, ok := r.statements[removeItem]
-	if !ok {
-		return fmt.Errorf("prepared statement '%s' not found", removeItem)
+	stmt, err := r.statement(removeItem)
+	if err != nil {
+		return err
 	}
 
 	if _, err := stmt.Exec(itemID, categoryID); err != nil {
@@ -172,9 +181,9 @@ func (r *CategoryRepository) RemoveItemFromCategory(itemID, categoryID int) erro
 }
 
 func (r *CategoryRepository) ItemCategories(itemID int) ([]*domain.Category, error) {
-	stmt, ok := r.statements[getItemCategories]
-	if !ok {
-		return nil, fmt.Errorf("prepared statement '%s' not found", getItemCategories)
+	stmt, err := r.statement(getItemCategories)
+	if err != nil {
+		return nil, err
 	}
 
 	var categories []*domain.Category
