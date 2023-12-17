@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"errors"
 	"github.com/pkg/errors"
 )
 
@@ -89,7 +90,7 @@ func (s *ItemService) DeleteItem(itemID int) error {
 
 	err := s.itemRepository.DeleteItem(itemID)
 	if err != nil {
-		if err == ErrItemNotFound {
+		if errors.Is(err, ErrItemNotFound) {
 			return ErrItemNotFound
 		}
 		return errors.Wrap(err, "Error to delete the item")
@@ -107,7 +108,7 @@ func (s *ItemService) FindItemByID(itemID int) (*Item, error) {
 
 	item, err := s.itemRepository.FindItemByID(itemID)
 	if err != nil {
-		if err == ErrItemNotFound {
+		if errors.Is(err, ErrItemNotFound) {
 			return nil, ErrItemNotFound
 		}
 		return nil, errors.Wrap(err, "Error to find the item")

@@ -42,8 +42,8 @@ func (m *MockItemRepository) ListItems() ([]*Item, error) {
 
 func TestCreateItem(t *testing.T) {
 	itemRepo := new(MockItemRepository)
-	catetoryRepo := new(MockCategoryRepository)
-	service := NewItemService(itemRepo, catetoryRepo)
+	categoryRepo := new(MockCategoryRepository)
+	service := NewItemService(itemRepo, categoryRepo)
 
 	item := &Item{Name: "Item Test"}
 
@@ -57,8 +57,8 @@ func TestCreateItem(t *testing.T) {
 
 func TestUpdateItem(t *testing.T) {
 	itemRepo := new(MockItemRepository)
-	catetoryRepo := new(MockCategoryRepository)
-	service := NewItemService(itemRepo, catetoryRepo)
+	categoryRepo := new(MockCategoryRepository)
+	service := NewItemService(itemRepo, categoryRepo)
 
 	item := &Item{ID: 1, Name: "Item Test"}
 
@@ -72,8 +72,8 @@ func TestUpdateItem(t *testing.T) {
 
 func TestDeleteItem(t *testing.T) {
 	itemRepo := new(MockItemRepository)
-	catetoryRepo := new(MockCategoryRepository)
-	service := NewItemService(itemRepo, catetoryRepo)
+	categoryRepo := new(MockCategoryRepository)
+	service := NewItemService(itemRepo, categoryRepo)
 
 	itemID := 1
 
@@ -87,8 +87,8 @@ func TestDeleteItem(t *testing.T) {
 
 func TestFindItemByID(t *testing.T) {
 	itemRepo := new(MockItemRepository)
-	catetoryRepo := new(MockCategoryRepository)
-	service := NewItemService(itemRepo, catetoryRepo)
+	categoryRepo := new(MockCategoryRepository)
+	service := NewItemService(itemRepo, categoryRepo)
 
 	itemID := 1
 	item := &Item{ID: itemID, Name: "Item Test"}
@@ -104,8 +104,8 @@ func TestFindItemByID(t *testing.T) {
 
 func TestListItems(t *testing.T) {
 	itemRepo := new(MockItemRepository)
-	catetoryRepo := new(MockCategoryRepository)
-	service := NewItemService(itemRepo, catetoryRepo)
+	categoryRepo := new(MockCategoryRepository)
+	service := NewItemService(itemRepo, categoryRepo)
 
 	items := []*Item{
 		{ID: 1, Name: "Item 1"},

@@ -1,4 +1,4 @@
-// Package postgres provides an implementation of the domain.Transaction interface
+// Package postgre provides an implementation of the domain.Transaction interface
 // using PostgreSQL database transactions.
 package postgres
 
@@ -9,40 +9,43 @@ import (
 	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
 )
 
-// PostgreSQLTransaction represents a PostgreSQL database transaction.
-type PostgreSQLTransaction struct {
+// Transaction represents a PostgreSQL database transaction.
+type Transaction struct {
 	db          *sqlx.DB
 	sqlTx       *sql.Tx
 	isCompleted bool
 }
 
-// NewPostgreSQLTransaction creates a new PostgreSQLTransaction for the given sqlx.DB.
-func NewPostgreSQLTransaction(db *sqlx.DB) (*PostgreSQLTransaction, error) {
+// NewTransaction creates a new Transaction for the given sqlx.DB.
+func NewTransaction(db *sqlx.DB) (*Transaction, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	return &PostgreSQLTransaction{
+	return &Transaction{
 		db:    db,
 		sqlTx: tx,
 	}, nil
 }
 
 // Begin returns the current transaction.
-func (t *PostgreSQLTransaction) Begin() (domain.Transaction, error) {
+func (t *Transaction) Begin() (domain.Transaction, error) {
 	return t, nil
 }
 
 // Commit commits the current transaction. If the transaction is already completed,
 // it returns nil. If an error occurs during commit, it rolls back the transaction.
-func (t *PostgreSQLTransaction) Commit() error {
+func (t *Transaction) Commit() error {
 	if t.isCompleted {
 		return nil
 	}
 
 	if err := t.sqlTx.Commit(); err != nil {
-		t.Rollback()
+		rberr := t.Rollback()
+		if rberr != nil {
+			return rberr
+		}
 		return err
 	}
 
@@ -52,7 +55,7 @@ func (t *PostgreSQLTransaction) Commit() error {
 
 // Rollback rolls back the current transaction. If the transaction is already completed,
 // it returns nil. If an error occurs during rollback, it returns the error.
-func (t *PostgreSQLTransaction) Rollback() error {
+func (t *Transaction) Rollback() error {
 	if t.isCompleted {
 		return nil
 	}

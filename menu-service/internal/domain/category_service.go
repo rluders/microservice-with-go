@@ -44,7 +44,7 @@ func (s *CategoryService) DeleteCategory(categoryID int) error {
 
 	err := s.categoryRepository.DeleteCategory(categoryID)
 	if err != nil {
-		if err == ErrCategoryNotFound {
+		if errors.Is(err, ErrCategoryNotFound) {
 			return ErrCategoryNotFound
 		}
 		return errors.Wrap(err, "Error to delete the category")
@@ -60,7 +60,7 @@ func (s *CategoryService) FindCategoryByID(categoryID int) (*Category, error) {
 
 	category, err := s.categoryRepository.FindCategoryByID(categoryID)
 	if err != nil {
-		if err == ErrCategoryNotFound {
+		if errors.Is(err, ErrCategoryNotFound) {
 			return nil, ErrCategoryNotFound
 		}
 		return nil, errors.Wrap(err, "Error to find the category")

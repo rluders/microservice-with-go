@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"log"
 	"net/http"
 	"time"
@@ -55,7 +56,7 @@ func (s *Server) Start() error {
 		err = s.Server.ListenAndServe()
 	}
 
-	if err != nil && err != http.ErrServerClosed {
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Printf("unable to start HTTP server: %+v\n", err)
 		return err
 	}

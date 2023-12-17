@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -25,7 +26,8 @@ func (r *Response) Marshal() []byte {
 }
 
 func sendValidationError(w http.ResponseWriter, err error) {
-	validationErrors := err.(validator.ValidationErrors)
+	var validationErrors validator.ValidationErrors
+	errors.As(err, &validationErrors)
 
 	fieldErrors := make(map[string][]string)
 	for _, vErr := range validationErrors {
@@ -37,7 +39,7 @@ func sendValidationError(w http.ResponseWriter, err error) {
 
 	response := &Response{
 		StatusCode: http.StatusBadRequest,
-		Message:    "Vaidation error",
+		Message:    "Validation error",
 		Payload: map[string]interface{}{
 			"errors": fieldErrors,
 		},
