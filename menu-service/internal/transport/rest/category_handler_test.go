@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 func TestCategoryHandler_Routes(t *testing.T) {

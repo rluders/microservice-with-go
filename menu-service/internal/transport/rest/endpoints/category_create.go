@@ -3,7 +3,7 @@ package endpoints
 import (
 	"net/http"
 
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 type CreateCategoryRequest struct {
@@ -29,7 +29,7 @@ func MakeCreateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 		}
 
 		category := &domain.Category{Name: request.Name}
-		if err := categoryService.CreateCategory(category); err != nil {
+		if err := categoryService.Create(category); err != nil {
 			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}

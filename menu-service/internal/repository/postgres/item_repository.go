@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 const (
@@ -65,7 +65,7 @@ func (r *ItemRepository) statement(query string) (*sqlx.Stmt, error) {
 	return stmt, nil
 }
 
-func (r *ItemRepository) CreateItem(item *domain.Item) error {
+func (r *ItemRepository) Create(item *domain.Item) error {
 	stmt, err := r.statement(createItem)
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func (r *ItemRepository) CreateItem(item *domain.Item) error {
 	return nil
 }
 
-func (r *ItemRepository) UpdateItem(item *domain.Item) error {
+func (r *ItemRepository) Update(item *domain.Item) error {
 	stmt, err := r.statement(updateItem)
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func (r *ItemRepository) UpdateItem(item *domain.Item) error {
 	return nil
 }
 
-func (r *ItemRepository) DeleteItem(itemID int) error {
+func (r *ItemRepository) Delete(itemID int) error {
 	stmt, err := r.statement(deleteItem)
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func (r *ItemRepository) DeleteItem(itemID int) error {
 	return nil
 }
 
-func (r *ItemRepository) FindItemByID(itemID int) (*domain.Item, error) {
+func (r *ItemRepository) Get(itemID int) (*domain.Item, error) {
 	stmt, err := r.statement(getItem)
 	if err != nil {
 		return nil, err
@@ -127,7 +127,7 @@ func (r *ItemRepository) FindItemByID(itemID int) (*domain.Item, error) {
 	return item, nil
 }
 
-func (r *ItemRepository) ListItems() ([]*domain.Item, error) {
+func (r *ItemRepository) List() ([]*domain.Item, error) {
 	stmt, err := r.statement(listItem)
 	if err != nil {
 		return nil, err

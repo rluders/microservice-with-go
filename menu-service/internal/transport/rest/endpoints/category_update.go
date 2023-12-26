@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 type UpdateCategoryRequest struct {
@@ -47,7 +47,7 @@ func MakeUpdateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 		}
 
 		category := &domain.Category{ID: request.ID, Name: request.Name}
-		if err := categoryService.UpdateCategory(category); err != nil {
+		if err := categoryService.Update(category); err != nil {
 			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}

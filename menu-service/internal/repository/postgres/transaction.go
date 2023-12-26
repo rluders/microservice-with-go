@@ -1,15 +1,13 @@
-// Package postgre provides an implementation of the domain.Transaction interface
-// using PostgreSQL database transactions.
 package postgres
 
 import (
 	"database/sql"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
-// Transaction represents a PostgreSQL database transaction.
+// Transaction represents a Postgres database transaction.
 type Transaction struct {
 	db          *sqlx.DB
 	sqlTx       *sql.Tx

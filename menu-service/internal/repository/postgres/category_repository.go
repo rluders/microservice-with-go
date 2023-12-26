@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 const (
@@ -74,7 +74,7 @@ func (r *CategoryRepository) statement(query string) (*sqlx.Stmt, error) {
 	return stmt, nil
 }
 
-func (r *CategoryRepository) CreateCategory(category *domain.Category) error {
+func (r *CategoryRepository) Create(category *domain.Category) error {
 	stmt, err := r.statement(createCategory)
 	if err != nil {
 		return err
@@ -90,7 +90,7 @@ func (r *CategoryRepository) CreateCategory(category *domain.Category) error {
 	return nil
 }
 
-func (r *CategoryRepository) UpdateCategory(category *domain.Category) error {
+func (r *CategoryRepository) Update(category *domain.Category) error {
 	stmt, err := r.statement(updateCategory)
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func (r *CategoryRepository) UpdateCategory(category *domain.Category) error {
 	return nil
 }
 
-func (r *CategoryRepository) DeleteCategory(categoryID int) error {
+func (r *CategoryRepository) Delete(categoryID int) error {
 	stmt, err := r.statement(deleteCategory)
 	if err != nil {
 		return err
@@ -126,7 +126,7 @@ func (r *CategoryRepository) DeleteCategory(categoryID int) error {
 	return nil
 }
 
-func (r *CategoryRepository) FindCategoryByID(categoryID int) (*domain.Category, error) {
+func (r *CategoryRepository) Get(categoryID int) (*domain.Category, error) {
 	stmt, err := r.statement(getCategory)
 	if err != nil {
 		return nil, err
@@ -140,7 +140,7 @@ func (r *CategoryRepository) FindCategoryByID(categoryID int) (*domain.Category,
 	return category, nil
 }
 
-func (r *CategoryRepository) ListCategories() ([]*domain.Category, error) {
+func (r *CategoryRepository) List() ([]*domain.Category, error) {
 	stmt, err := r.statement(listCategory)
 	if err != nil {
 		return nil, err
@@ -154,7 +154,7 @@ func (r *CategoryRepository) ListCategories() ([]*domain.Category, error) {
 	return categories, nil
 }
 
-func (r *CategoryRepository) AddItemToCategory(itemID, categoryID int) error {
+func (r *CategoryRepository) AddItem(itemID, categoryID int) error {
 	stmt, err := r.statement(addItem)
 	if err != nil {
 		return err
@@ -167,7 +167,7 @@ func (r *CategoryRepository) AddItemToCategory(itemID, categoryID int) error {
 	return nil
 }
 
-func (r *CategoryRepository) RemoveItemFromCategory(itemID, categoryID int) error {
+func (r *CategoryRepository) RemoveItem(itemID, categoryID int) error {
 	stmt, err := r.statement(removeItem)
 	if err != nil {
 		return err

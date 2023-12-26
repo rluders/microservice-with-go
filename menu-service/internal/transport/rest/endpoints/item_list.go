@@ -3,7 +3,7 @@ package endpoints
 import (
 	"net/http"
 
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 type ListItemResponse struct {
@@ -12,7 +12,7 @@ type ListItemResponse struct {
 
 func MakeListItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		items, err := itemService.ListItems()
+		items, err := itemService.List()
 		if err != nil {
 			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
 			return

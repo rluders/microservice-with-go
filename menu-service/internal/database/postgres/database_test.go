@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"menu-service/internal/config"
 )
 
 func TestConnectWithMock(t *testing.T) {

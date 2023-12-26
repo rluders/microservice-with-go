@@ -12,22 +12,22 @@ type MockCategoryRepository struct {
 	mock.Mock
 }
 
-func (m *MockCategoryRepository) CreateCategory(category *Category) error {
+func (m *MockCategoryRepository) Create(category *Category) error {
 	args := m.Called(category)
 	return args.Error(0)
 }
 
-func (m *MockCategoryRepository) UpdateCategory(category *Category) error {
+func (m *MockCategoryRepository) Update(category *Category) error {
 	args := m.Called(category)
 	return args.Error(0)
 }
 
-func (m *MockCategoryRepository) DeleteCategory(categoryID int) error {
+func (m *MockCategoryRepository) Delete(categoryID int) error {
 	args := m.Called(categoryID)
 	return args.Error(0)
 }
 
-func (m *MockCategoryRepository) FindCategoryByID(categoryID int) (*Category, error) {
+func (m *MockCategoryRepository) Get(categoryID int) (*Category, error) {
 	args := m.Called(categoryID)
 	if category := args.Get(0); category != nil {
 		return category.(*Category), args.Error(1)
@@ -35,8 +35,23 @@ func (m *MockCategoryRepository) FindCategoryByID(categoryID int) (*Category, er
 	return nil, args.Error(1)
 }
 
-func (m *MockCategoryRepository) ListCategories() ([]*Category, error) {
+func (m *MockCategoryRepository) List() ([]*Category, error) {
 	args := m.Called()
+	return args.Get(0).([]*Category), args.Error(1)
+}
+
+func (m *MockCategoryRepository) AddItem(itemID, categoryID int) error {
+	args := m.Called(itemID, categoryID)
+	return args.Error(0)
+}
+
+func (m *MockCategoryRepository) RemoveItem(itemID, categoryID int) error {
+	args := m.Called(itemID, categoryID)
+	return args.Error(0)
+}
+
+func (m *MockCategoryRepository) ItemCategories(categoryID int) ([]*Category, error) {
+	args := m.Called(categoryID)
 	return args.Get(0).([]*Category), args.Error(1)
 }
 
@@ -46,9 +61,9 @@ func TestCreateCategory(t *testing.T) {
 
 	category := &Category{Name: "Categoria de Teste"}
 
-	repo.On("CreateCategory", category).Return(nil)
+	repo.On("Create", category).Return(nil)
 
-	err := service.CreateCategory(category)
+	err := service.Create(category)
 
 	assert.NoError(t, err)
 	repo.AssertExpectations(t)
@@ -60,9 +75,9 @@ func TestUpdateCategory(t *testing.T) {
 
 	category := &Category{ID: 1, Name: "Categoria de Teste"}
 
-	repo.On("UpdateCategory", category).Return(nil)
+	repo.On("Update", category).Return(nil)
 
-	err := service.UpdateCategory(category)
+	err := service.Update(category)
 
 	assert.NoError(t, err)
 	repo.AssertExpectations(t)
@@ -74,24 +89,24 @@ func TestDeleteCategory(t *testing.T) {
 
 	categoryID := 1
 
-	repo.On("DeleteCategory", categoryID).Return(nil)
+	repo.On("Delete", categoryID).Return(nil)
 
-	err := service.DeleteCategory(categoryID)
+	err := service.Delete(categoryID)
 
 	assert.NoError(t, err)
 	repo.AssertExpectations(t)
 }
 
-func TestFindCategoryByID(t *testing.T) {
+func TestGetCategory(t *testing.T) {
 	repo := new(MockCategoryRepository)
 	service := NewCategoryService(repo)
 
 	categoryID := 1
 	category := &Category{ID: categoryID, Name: "Categoria de Teste"}
 
-	repo.On("FindCategoryByID", categoryID).Return(category, nil)
+	repo.On("Get", categoryID).Return(category, nil)
 
-	result, err := service.FindCategoryByID(categoryID)
+	result, err := service.Get(categoryID)
 
 	assert.NoError(t, err)
 	assert.Equal(t, category, result)
@@ -107,9 +122,9 @@ func TestListCategories(t *testing.T) {
 		{ID: 2, Name: "Categoria 2"},
 	}
 
-	repo.On("ListCategories").Return(categories, nil)
+	repo.On("List").Return(categories, nil)
 
-	result, err := service.ListCategories()
+	result, err := service.List()
 
 	assert.NoError(t, err)
 	assert.Equal(t, categories, result)

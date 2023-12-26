@@ -1,12 +1,12 @@
 package domain
 
 type CategoryRepository interface {
-	CreateCategory(category *Category) error
-	UpdateCategory(category *Category) error
-	DeleteCategory(categoryID int) error
-	FindCategoryByID(categoryID int) (*Category, error)
-	ListCategories() ([]*Category, error)
-	AddItemToCategory(itemID, categoryID int) error
-	RemoveItemFromCategory(itemID, categoryID int) error
+	Create(category *Category) error
+	Update(category *Category) error
+	Delete(categoryID int) error
+	Get(categoryID int) (*Category, error)
+	List() ([]*Category, error)
+	AddItem(itemID, categoryID int) error
+	RemoveItem(itemID, categoryID int) error
 	ItemCategories(itemID int) ([]*Category, error)
 }

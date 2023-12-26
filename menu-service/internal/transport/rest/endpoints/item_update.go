@@ -3,7 +3,7 @@ package endpoints
 import (
 	"net/http"
 
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 func MakeUpdateItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {

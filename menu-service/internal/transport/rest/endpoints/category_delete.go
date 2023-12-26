@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 type DeleteCategoryRequest struct {
@@ -34,7 +34,7 @@ func MakeDeleteCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 			return
 		}
 
-		if err := categoryService.DeleteCategory(request.ID); err != nil {
+		if err := categoryService.Delete(request.ID); err != nil {
 			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}

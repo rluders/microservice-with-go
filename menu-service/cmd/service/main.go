@@ -12,12 +12,12 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/gorilla/mux"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/config"
-	database "github.com/rluders/tutorial-microservices/menu-service/internal/database/postgres"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
-	repository "github.com/rluders/tutorial-microservices/menu-service/internal/repository/postgres"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/transport/rest"
 	"golang.org/x/sync/errgroup"
+	"menu-service/internal/config"
+	database "menu-service/internal/database/postgres"
+	"menu-service/internal/domain"
+	repository "menu-service/internal/repository/postgres"
+	"menu-service/internal/transport/rest"
 )
 
 func main() {

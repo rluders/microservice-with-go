@@ -1,11 +1,15 @@
 package domain
 
 import (
-	"errors"
 	"github.com/pkg/errors"
+	"log"
 )
 
-var ErrItemNotFound = errors.New("Item not found")
+var (
+	ErrItemNotFound  = errors.New("Item not found")
+	ErrItemIsNull    = &ValidationError{"Item can't be null"}
+	ErrItemIDInvalid = &ValidationError{"Invalid item ID"}
+)
 
 type ItemService struct {
 	itemRepository     ItemRepository
@@ -28,67 +32,68 @@ func (s *ItemService) WithTransaction(tx Transaction) *ItemService {
 	}
 }
 
-func (s *ItemService) CreateItem(item *Item) error {
+func (s *ItemService) Create(item *Item) error {
 	if item == nil {
-		return &ValidationError{"Item can't be null"}
+		return ErrCategoryIsNull
 	}
 
 	if s.transaction != nil {
 		tx, err := s.transaction.Begin()
 		if err != nil {
-			return errors.Wrap(err, "unable to begin transaction")
+			return errors.Wrap(err, "Unable to begin transaction")
 		}
 		defer func() {
-			tx.Rollback()
+			err := tx.Rollback()
+			if err != nil {
+				log.Printf("Fail to rollback item creation transaction: %v", err)
+			}
 		}()
 	}
 
-	if err := s.itemRepository.CreateItem(item); err != nil {
+	if err := s.itemRepository.Create(item); err != nil {
 		return err
 	}
 
 	for i, c := range item.Categories {
-		category, err := s.categoryRepository.FindCategoryByID(c.ID)
+		category, err := s.categoryRepository.Get(c.ID)
 		if err != nil {
-			return errors.Wrapf(err, "unable to add item to category")
+			return errors.Wrapf(err, "Unable to add item to category")
 		}
 
-		if err := s.categoryRepository.AddItemToCategory(item.ID, category.ID); err != nil {
-			return errors.Wrap(err, "unable to add item to category")
+		if err := s.categoryRepository.AddItem(item.ID, category.ID); err != nil {
+			return errors.Wrap(err, "Unable to add item to category")
 		}
 		item.Categories[i] = category
 	}
 
 	if s.transaction != nil {
 		if err := s.transaction.Commit(); err != nil {
-			return errors.Wrap(err, "unable to commit transaction")
+			return errors.Wrap(err, "Unable to commit transaction")
 		}
 	}
 
 	return nil
 }
 
-func (s *ItemService) UpdateItem(item *Item) error {
+func (s *ItemService) Update(item *Item) error {
 	if item == nil {
-		return &ValidationError{"Item can't be null"}
+		return ErrItemIsNull
 	}
 
-	err := s.itemRepository.UpdateItem(item)
+	err := s.itemRepository.Update(item)
 	if err != nil {
 		return errors.Wrap(err, "Unable to update the item")
 	}
 
-	// TODO: Link Categories
-
 	return nil
 }
 
-func (s *ItemService) DeleteItem(itemID int) error {
+func (s *ItemService) Delete(itemID int) error {
 	if itemID <= 0 {
-		return &ValidationError{"Invalid item ID"}
+		return ErrItemIDInvalid
 	}
 
-	err := s.itemRepository.DeleteItem(itemID)
+	err := s.itemRepository.Delete(itemID)
 	if err != nil {
 		if errors.Is(err, ErrItemNotFound) {
 			return ErrItemNotFound
@@ -96,17 +101,15 @@ func (s *ItemService) DeleteItem(itemID int) error {
 		return errors.Wrap(err, "Error to delete the item")
 	}
 
-	// TODO: Delete Category Links
-
 	return nil
 }
 
-func (s *ItemService) FindItemByID(itemID int) (*Item, error) {
+func (s *ItemService) Get(itemID int) (*Item, error) {
 	if itemID <= 0 {
-		return nil, &ValidationError{"Invalid item ID"}
+		return nil, ErrItemIDInvalid
 	}
 
-	item, err := s.itemRepository.FindItemByID(itemID)
+	item, err := s.itemRepository.Get(itemID)
 	if err != nil {
 		if errors.Is(err, ErrItemNotFound) {
 			return nil, ErrItemNotFound
@@ -124,8 +127,8 @@ func (s *ItemService) FindItemByID(itemID int) (*Item, error) {
 	return item, nil
 }
 
-func (s *ItemService) ListItems() ([]*Item, error) {
-	items, err := s.itemRepository.ListItems()
+func (s *ItemService) List() ([]*Item, error) {
+	items, err := s.itemRepository.List()
 	if err != nil {
 		return nil, errors.Wrap(err, "Error to list items")
 	}

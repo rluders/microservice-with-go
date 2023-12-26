@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
 	"github.com/stretchr/testify/assert"
+	"menu-service/internal/domain"
 )
 
 func TestMakeGetCategoryEndpoint(t *testing.T) {

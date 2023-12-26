@@ -3,7 +3,7 @@ package endpoints
 import (
 	"net/http"
 
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
+	"menu-service/internal/domain"
 )
 
 type CreateItemRequest struct {
@@ -43,7 +43,7 @@ func MakeCreateItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 			}
 		}
 
-		if err := itemService.CreateItem(item); err != nil {
+		if err := itemService.Create(item); err != nil {
 			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}

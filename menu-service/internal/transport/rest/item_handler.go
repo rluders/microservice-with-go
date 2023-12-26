@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/transport/rest/endpoints"
+	"menu-service/internal/domain"
+	"menu-service/internal/transport/rest/endpoints"
 )
 
 type ItemHandler struct {
@@ -20,10 +20,10 @@ func NewItemHandler(itemService *domain.ItemService) *ItemHandler {
 
 func (h *ItemHandler) Register(router *mux.Router) {
 	listItemEndpoint := endpoints.MakeListItemEndpoint(h.itemService)
-	findItemEndpoint := endpoints.MakeFindItemEndpoint(h.itemService)
+	getItemEndpoint := endpoints.MakeGetItemEndpoint(h.itemService)
 
 	router.HandleFunc("/items", listItemEndpoint).Methods(http.MethodGet)
-	router.HandleFunc("/items/{id}", findItemEndpoint).Methods(http.MethodGet)
+	router.HandleFunc("/items/{id}", getItemEndpoint).Methods(http.MethodGet)
 
 	protected := router.PathPrefix("/").Subrouter()
 	//protected.Use(AuthMiddleware)

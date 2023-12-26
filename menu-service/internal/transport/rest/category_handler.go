@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
-	"github.com/rluders/tutorial-microservices/menu-service/internal/transport/rest/endpoints"
+	"menu-service/internal/domain"
+	"menu-service/internal/transport/rest/endpoints"
 )
 
 type CategoryHandler struct {
@@ -20,10 +20,10 @@ func NewCategoryHandler(categoryService *domain.CategoryService) *CategoryHandle
 
 func (h *CategoryHandler) Register(router *mux.Router) {
 	listCategoryEndpoint := endpoints.MakeListCategoryEndpoint(h.categoryService)
-	findCategoryEndpoint := endpoints.MakeFindCategoryEndpoint(h.categoryService)
+	getCategoryEndpoint := endpoints.MakeGetCategoryEndpoint(h.categoryService)
 
 	router.HandleFunc("/categories", listCategoryEndpoint).Methods(http.MethodGet)
-	router.HandleFunc("/categories/{id}", findCategoryEndpoint).Methods(http.MethodGet)
+	router.HandleFunc("/categories/{id}", getCategoryEndpoint).Methods(http.MethodGet)
 
 	protected := router.PathPrefix("/").Subrouter()
 	// protected.Use(AuthMiddleware)
