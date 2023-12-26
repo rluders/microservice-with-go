@@ -1,51 +1,24 @@
-# Repositório de Prévia do Curso "Microserviços na Prática com Go"
+# Bem-vindo ao "Microserviços na Prática com Go" 🚀
 
-Bem-vindo ao repositório de prévia do curso "Microserviços na Prática com Go"! Este repositório oferece uma visão prévia do conteúdo e exemplos abordados em nosso próximo curso de Microserviços na prática com Go. Por favor, observe que esta é uma versão de prévia e pode não conter todo o material do curso.
+Este repositório contém os códigos e recursos relacionados ao curso "Microserviços na prática com Go". O curso está em
+desenvolvimento.
 
-## Visão Geral do Curso
+Para acessar o curso visite a [página do curso](https://luders.com.br/cursogo). O curso é totalmente grátis.
 
-O Curso "Microserviços na Prática com Go" foi desenvolvido para ajudá-lo a entender e construir aplicações baseadas em microserviços. Ele abrange uma ampla gama de tópicos, incluindo arquitetura, padrões de design, implantação e melhores práticas para criar microserviços escaláveis e de fácil manutenção.
+## Sobre o Repositório
 
-## Conteúdo
+Conforme o curso progride, cada parte será organizada como uma branch separada. Isso facilitará a navegação e referência
+para códigos específicos de cada etapa.
 
-Neste repositório, você encontrará:
+Existe também a possibilidade de visualizar a branch `develop`, onde estão todos os códigos que estou montando enquanto
+preparo o curso, lá é possível acompanhar todo o histórico de alterações - porém é apenas meu playground e não deve ser
+considerado como parte do código final.
 
-- Código de amostra e exemplos usados no curso.
-- Documentação e guias relacionados ao desenvolvimento de microserviços.
-- Recursos e referências para aprendizado adicional.
+## Dúvidas e Sugestões
 
-## Como Começar
+Sinta-se à vontade para contribuir, reportar problemas ou sugerir melhorias. Todas as contribuições são bem-vindas!
+Em caso de dúvida sobre alguma etapa, por favor, não deixe de abrir uma [Discussão](https://github.com/rluders/microservice-with-go/discussions)
 
-Para começar com o conteúdo de prévia, siga estas etapas:
+## Licença
 
-1. Clone este repositório em sua máquina local.
-2. Explore os exemplos de código e a documentação fornecidos.
-3. Experimente os projetos de amostra e exercícios.
-4. Fique atento para atualizações e anúncios sobre o Curso Completo de Microserviços.
-
-## Tópicos do Curso
-
-Aqui está uma breve visão geral dos tópicos abordados no curso:
-
-1. Introdução aos Microserviços
-2. Design de Microserviços
-3. Implementação de Microserviços
-4. Comunicação Entre Microserviços
-5. Gerenciamento de Dados e Bancos de Dados
-6. Testes e Garantia de Qualidade
-7. Implantação e Escalabilidade
-8. Monitoramento e Registro
-9. Segurança e Autenticação
-10. Melhores Práticas e Exemplos do Mundo Real
-
-## Feedback e Perguntas
-
-Valorizamos seu feedback! Se você tiver alguma pergunta ou sugestão relacionada ao conteúdo de prévia ou se desejar se inscrever no Curso Completo de Microserviços na prática com Go, entre em [contato](mailto:ricardo@luders.com.br).
-
-## Aviso
-
-Este repositório contém apenas uma parte dos materiais do curso. Para a experiência completa do curso, incluindo videoaulas, tarefas e questionários, inscreva-se no Curso Oficial de Microserviços na Prática com Go quando estiver disponível.
-
-Bons estudos!
-
-![Logotipo de Prévia](logotipo_previa.png)
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.

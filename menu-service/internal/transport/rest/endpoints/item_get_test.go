@@ -14,7 +14,7 @@ func TestMakeFindItemEndpoint(t *testing.T) {
 	itemService := &domain.ItemService{}
 
 	// Create a fake HTTP server to handle the request.
-	server := httptest.NewServer(MakeFindItemEndpoint(itemService))
+	server := httptest.NewServer(MakeGetItemEndpoint(itemService))
 	defer server.Close()
 
 	// Create a fake GET request to the fake server.

@@ -8,15 +8,15 @@ import (
 	"github.com/rluders/tutorial-microservices/menu-service/internal/domain"
 )
 
-type FindItemRequest struct {
+type GetCategoryRequest struct {
 	ID int `json:"id" validate:"required"`
 }
 
-type FindItemResponse struct {
-	Item *domain.Item `json:"item"`
+type GetCategoryResponse struct {
+	Category *domain.Category `json:"category"`
 }
 
-func MakeFindItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
+func MakeGetCategoryEndpoint(categoryService *domain.CategoryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		idStr, ok := vars["id"]
@@ -31,22 +31,22 @@ func MakeFindItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 			return
 		}
 
-		request := &FindItemRequest{ID: id}
+		request := &GetCategoryRequest{ID: id}
 
 		if err := isRequestValid(request); err != nil {
 			sendValidationError(w, err)
 			return
 		}
 
-		item, err := itemService.FindItemByID(request.ID)
+		category, err := categoryService.Get(request.ID)
 		if err != nil {
 			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		payload := &FindItemResponse{
-			Item: item,
+		payload := &GetCategoryResponse{
+			Category: category,
 		}
-		sendDataResponse[FindItemResponse](w, "Item found", http.StatusOK, payload)
+		sendDataResponse[GetCategoryResponse](w, "Category found", http.StatusOK, payload)
 	}
 }

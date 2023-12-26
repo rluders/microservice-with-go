@@ -9,12 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMakeFindCategoryEndpoint(t *testing.T) {
+func TestMakeGetCategoryEndpoint(t *testing.T) {
 	// Create a mock instance of CategoryService to pass to the function.
 	categoryService := &domain.CategoryService{}
 
 	// Create a fake HTTP server to handle the request.
-	server := httptest.NewServer(MakeFindCategoryEndpoint(categoryService))
+	server := httptest.NewServer(MakeGetCategoryEndpoint(categoryService))
 	defer server.Close()
 
 	// Create a fake GET request to the fake server.
