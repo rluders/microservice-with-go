@@ -2,19 +2,15 @@ package domain
 
 import (
 	"encoding/json"
-	"testing"
-	"time"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestCategoryJSONSerialization(t *testing.T) {
 	// Create an example category
 	category := &Category{
-		ID:        1,
-		Name:      "Test Category",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:   1,
+		Name: "Test Category",
 	}
 
 	// Serialize the category to JSON
