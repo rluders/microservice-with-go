@@ -58,7 +58,8 @@ func queriesItem() map[string]string {
             categories c ON ic.category_id = c.id
         WHERE
             i.id = :id
-		AND i.deleted_at IS NULL`,
+		AND i.deleted_at IS NULL
+		ORDER BY c.name`,
 		listItem: `SELECT
 					i.name,
 					i.id,
