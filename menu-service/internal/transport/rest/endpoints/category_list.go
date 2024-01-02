@@ -18,6 +18,11 @@ func MakeListCategoryEndpoint(categoryService *domain.CategoryService) http.Hand
 			return
 		}
 
+		if len(categories) == 0 {
+			sendErrorResponse(w, "Categories not found", http.StatusNotFound)
+			return
+		}
+
 		payload := &ListCategoryResponse{
 			Categories: categories,
 		}

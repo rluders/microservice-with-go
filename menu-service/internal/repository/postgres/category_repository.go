@@ -1,11 +1,10 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
-	"log"
-	"time"
-
 	"github.com/jmoiron/sqlx"
+	"log"
 	"menu-service/internal/domain"
 )
 
@@ -22,31 +21,31 @@ const (
 
 func queriesCategory() map[string]string {
 	return map[string]string{
-		createCategory: `INSERT INTO categories (name) VALUES ($1) RETURNING *`,
-		deleteCategory: `UPDATE categories SET deleted_at = NOW() WHERE id = $1`,
-		getCategory:    `SELECT * FROM categories WHERE id = $1`,
+		createCategory: `INSERT INTO categories (name) VALUES (:name) RETURNING *`,
+		deleteCategory: `UPDATE categories SET deleted_at = NOW() WHERE id = :id`,
+		getCategory:    `SELECT * FROM categories WHERE id = :id`,
 		listCategory:   `SELECT * FROM categories WHERE deleted_at IS NULL ORDER BY name ASC`,
-		updateCategory: `UPDATE categories SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
-		addItem:        `INSERT INTO item_categories (item_id, category_id) VALUES ($1, $2)`,
-		removeItem:     `DELETE FROM item_categories WHERE item_id = $1 AND category_id = $2`,
+		updateCategory: `UPDATE categories SET name = :name, updated_at = NOW() WHERE id = :id RETURNING *`,
+		addItem:        `INSERT INTO item_categories (item_id, category_id) VALUES (:item_id, :category_id)`,
+		removeItem:     `DELETE FROM item_categories WHERE item_id = :item_id AND category_id = :category_id`,
 		getItemCategories: `SELECT c.id, c.name
 		FROM categories c
 		INNER JOIN item_categories ic ON c.id = ic.category_id
-		WHERE ic.item_id = $1`,
+		WHERE ic.item_id = :item_id`,
 	}
 }
 
 type CategoryRepository struct {
 	DB         *sqlx.DB
-	statements map[string]*sqlx.Stmt
+	statements map[string]*sqlx.NamedStmt
 }
 
 func NewCategoryRepository(db *sqlx.DB) *CategoryRepository {
-	sqlStatements := make(map[string]*sqlx.Stmt)
+	sqlStatements := make(map[string]*sqlx.NamedStmt)
 
 	var errs []error
 	for queryName, query := range queriesCategory() {
-		stmt, err := db.Preparex(query)
+		stmt, err := db.PrepareNamed(query)
 		if err != nil {
 			log.Printf("error preparing statement %s: %v", queryName, err)
 			errs = append(errs, err)
@@ -65,7 +64,7 @@ func NewCategoryRepository(db *sqlx.DB) *CategoryRepository {
 	}
 }
 
-func (r *CategoryRepository) statement(query string) (*sqlx.Stmt, error) {
+func (r *CategoryRepository) statement(query string) (*sqlx.NamedStmt, error) {
 	stmt, ok := r.statements[query]
 	if !ok {
 		return nil, fmt.Errorf("prepared statement '%s' not found", query)
@@ -80,7 +79,11 @@ func (r *CategoryRepository) Create(category *domain.Category) error {
 		return err
 	}
 
-	if err := stmt.Get(category, category.Name); err != nil {
+	params := QueryParams{
+		"name": category.Name,
+	}
+
+	if err := stmt.GetContext(context.Background(), category, params); err != nil {
 		if isUniqueViolationError(err) {
 			return fmt.Errorf("category with name '%s' already exists", category.Name)
 		}
@@ -96,14 +99,12 @@ func (r *CategoryRepository) Update(category *domain.Category) error {
 		return err
 	}
 
-	category.UpdatedAt = time.Now()
-
-	params := []interface{}{
-		category.Name,
-		category.ID,
+	params := QueryParams{
+		"name": category.Name,
+		"id":   category.ID,
 	}
 
-	if err := stmt.Get(category, params...); err != nil {
+	if err := stmt.GetContext(context.Background(), category, params); err != nil {
 		if isUniqueViolationError(err) {
 			return fmt.Errorf("category with name '%s' already exists", category.Name)
 		}
@@ -119,7 +120,11 @@ func (r *CategoryRepository) Delete(categoryID int) error {
 		return err
 	}
 
-	if _, err := stmt.Exec(categoryID); err != nil {
+	params := QueryParams{
+		"id": categoryID,
+	}
+
+	if _, err := stmt.ExecContext(context.Background(), params); err != nil {
 		return fmt.Errorf("error deleting category with id '%d'", categoryID)
 	}
 
@@ -132,8 +137,12 @@ func (r *CategoryRepository) Get(categoryID int) (*domain.Category, error) {
 		return nil, err
 	}
 
+	params := QueryParams{
+		"id": categoryID,
+	}
+
 	category := &domain.Category{}
-	if err := stmt.Get(category, categoryID); err != nil {
+	if err := stmt.GetContext(context.Background(), category, params); err != nil {
 		return nil, fmt.Errorf("error getting the category with id '%d'", categoryID)
 	}
 
@@ -146,8 +155,10 @@ func (r *CategoryRepository) List() ([]*domain.Category, error) {
 		return nil, err
 	}
 
+	params := QueryParams{}
+
 	var categories []*domain.Category
-	if err := stmt.Select(&categories); err != nil {
+	if err := stmt.SelectContext(context.Background(), &categories, params); err != nil {
 		return nil, fmt.Errorf("error getting categories")
 	}
 
@@ -160,7 +171,12 @@ func (r *CategoryRepository) AddItem(itemID, categoryID int) error {
 		return err
 	}
 
-	if _, err := stmt.Exec(itemID, categoryID); err != nil {
+	params := QueryParams{
+		"item_id":     itemID,
+		"category_id": categoryID,
+	}
+
+	if _, err := stmt.ExecContext(context.Background(), params); err != nil {
 		return fmt.Errorf("error adding item '%d' from to category '%d'", itemID, categoryID)
 	}
 
@@ -173,24 +189,14 @@ func (r *CategoryRepository) RemoveItem(itemID, categoryID int) error {
 		return err
 	}
 
-	if _, err := stmt.Exec(itemID, categoryID); err != nil {
+	params := QueryParams{
+		"item_id":     itemID,
+		"category_id": categoryID,
+	}
+
+	if _, err := stmt.ExecContext(context.Background(), params); err != nil {
 		return fmt.Errorf("error removing item '%d' from the category '%d'", itemID, categoryID)
 	}
 
 	return nil
-}
-
-func (r *CategoryRepository) ItemCategories(itemID int) ([]*domain.Category, error) {
-	stmt, err := r.statement(getItemCategories)
-	if err != nil {
-		return nil, err
-	}
-
-	var categories []*domain.Category
-
-	if err := stmt.Select(&categories, itemID); err != nil {
-		return nil, err
-	}
-
-	return categories, nil
 }

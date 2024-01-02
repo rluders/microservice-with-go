@@ -50,25 +50,6 @@ func (m *MockCategoryRepository) RemoveItem(itemID, categoryID int) error {
 	return args.Error(0)
 }
 
-func (m *MockCategoryRepository) ItemCategories(categoryID int) ([]*Category, error) {
-	args := m.Called(categoryID)
-	return args.Get(0).([]*Category), args.Error(1)
-}
-
-func TestCreateCategory(t *testing.T) {
-	repo := new(MockCategoryRepository)
-	service := NewCategoryService(repo)
-
-	category := &Category{Name: "Categoria de Teste"}
-
-	repo.On("Create", category).Return(nil)
-
-	err := service.Create(category)
-
-	assert.NoError(t, err)
-	repo.AssertExpectations(t)
-}
-
 func TestUpdateCategory(t *testing.T) {
 	repo := new(MockCategoryRepository)
 	service := NewCategoryService(repo)

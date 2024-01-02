@@ -36,12 +36,12 @@ func MakeCreateItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 			Description: request.Description,
 			Price:       request.Price,
 		}
-		if len(request.Categories) > 0 {
-			item.Categories = []*domain.Category{}
-			for _, c := range request.Categories {
-				item.Categories = append(item.Categories, &domain.Category{ID: c})
-			}
-		}
+		//if len(request.Categories) > 0 {
+		//	item.Categories = []*domain.Category{}
+		//	for _, c := range request.Categories {
+		//		item.Categories = append(item.Categories, &domain.Category{ID: c})
+		//	}
+		//}
 
 		if err := itemService.Create(item); err != nil {
 			sendErrorResponse(w, err.Error(), http.StatusBadRequest)

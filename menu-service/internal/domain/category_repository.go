@@ -8,5 +8,4 @@ type CategoryRepository interface {
 	List() ([]*Category, error)
 	AddItem(itemID, categoryID int) error
 	RemoveItem(itemID, categoryID int) error
-	ItemCategories(itemID int) ([]*Category, error)
 }

@@ -5,11 +5,14 @@ import (
 	"github.com/lib/pq"
 )
 
-// Função auxiliar para verificar se o erro é uma violação da restrição UNIQUE
+// QueryParams is used to define the params to StmtNamed queries
+type QueryParams map[string]interface{}
+
+// Helper function to check if the error is a UNIQUE constraint violation
 func isUniqueViolationError(err error) bool {
-	// O código de erro de violação de chave única do PostgreSQL é 23505
-	// Pode variar em outros sistemas de gerenciamento de banco de dados
-	// Certifique-se de verificar o código de erro correto para o PostgreSQL
+	// The PostgreSQL unique key violation error code is 23505
+	// It may vary in other database management systems
+	// Make sure to check the correct error code for PostgreSQL
 	var pgError *pq.Error
 	ok := errors.As(err, &pgError)
 	if !ok {

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 	"menu-service/internal/domain"
 )
 
@@ -32,12 +33,12 @@ func TestCategoryHandler_Routes(t *testing.T) {
 		if methods, _ := route.GetMethods(); methods != nil {
 			pathTemplate, err := route.GetPathTemplate()
 			if err != nil {
-				t.Fatalf("Failed to get path template: %v", err)
+				return err
 			}
 
 			methods, err := route.GetMethods()
 			if err != nil {
-				t.Fatalf("Failed to get methods: %v", err)
+				return err
 			}
 
 			for _, method := range methods {
@@ -49,17 +50,15 @@ func TestCategoryHandler_Routes(t *testing.T) {
 	}
 
 	err := router.Walk(callback)
-	if err != nil {
-		t.Fatalf("An unexpected error happened while walking through the router: %v", err)
-	}
+	assert.Nil(t, err, "Unexpected error while walking through the router")
 
-	for _, route := range expectedRoutes {
+	for _, r := range expectedRoutes {
+		route := r
 		t.Run(route.path, func(t *testing.T) {
+			t.Parallel()
 			expectedRouteKey := route.method + " " + route.path
 
-			if _, ok := registeredRoutes[expectedRouteKey]; !ok {
-				t.Errorf("Expected route %v is not registered", expectedRouteKey)
-			}
+			assert.True(t, registeredRoutes[expectedRouteKey], "Expected route %v is not registered", expectedRouteKey)
 		})
 	}
 }

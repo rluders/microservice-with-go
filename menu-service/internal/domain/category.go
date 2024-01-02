@@ -1,11 +1,13 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type Category struct {
-	ID        int        `json:"id"`
-	Name      string     `json:"name"`
-	CreatedAt time.Time  `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time  `db:"updated_at" json:"updated_at"`
-	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at,omitempty"`
+	ID        int        `json:"id" db:"id"`
+	Name      string     `json:"name" db:"name"`
+	CreatedAt time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
 }

@@ -54,17 +54,17 @@ func (s *ItemService) Create(item *Item) error {
 		return err
 	}
 
-	for i, c := range item.Categories {
-		category, err := s.categoryRepository.Get(c.ID)
-		if err != nil {
-			return errors.Wrapf(err, "Unable to add item to category")
-		}
-
-		if err := s.categoryRepository.AddItem(item.ID, category.ID); err != nil {
-			return errors.Wrap(err, "Unable to add item to category")
-		}
-		item.Categories[i] = category
-	}
+	//for i, c := range item.Categories {
+	//	category, err := s.categoryRepository.Get(c.ID)
+	//	if err != nil {
+	//		return errors.Wrapf(err, "Unable to add item to category")
+	//	}
+	//
+	//	if err := s.categoryRepository.AddItem(item.ID, category.ID); err != nil {
+	//		return errors.Wrap(err, "Unable to add item to category")
+	//	}
+	//	item.Categories[i] = category
+	//}
 
 	if s.transaction != nil {
 		if err := s.transaction.Commit(); err != nil {
@@ -117,13 +117,6 @@ func (s *ItemService) Get(itemID int) (*Item, error) {
 		return nil, errors.Wrap(err, "Error to find the item")
 	}
 
-	categories, err := s.categoryRepository.ItemCategories(itemID)
-	if err != nil {
-		return nil, errors.Wrap(err, "Error to get categories for item")
-	}
-
-	item.Categories = categories
-
 	return item, nil
 }
 
@@ -131,15 +124,6 @@ func (s *ItemService) List() ([]*Item, error) {
 	items, err := s.itemRepository.List()
 	if err != nil {
 		return nil, errors.Wrap(err, "Error to list items")
-	}
-
-	for k, item := range items {
-		categories, err := s.categoryRepository.ItemCategories(item.ID)
-		if err != nil {
-			return nil, errors.Wrap(err, "Error to get categories for item")
-		}
-
-		items[k].Categories = categories
 	}
 
 	return items, nil

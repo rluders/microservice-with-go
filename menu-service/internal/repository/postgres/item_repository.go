@@ -1,11 +1,11 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
-	"log"
-	"time"
-
+	"github.com/jackskj/carta"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"menu-service/internal/domain"
 )
 
@@ -19,25 +19,92 @@ const (
 
 func queriesItem() map[string]string {
 	return map[string]string{
-		createItem: `INSERT INTO items (name, description, price) VALUES ($1, $2, $3) RETURNING *`,
-		deleteItem: `UPDATE items SET deleted_at = NOW() WHERE id = $1`,
-		getItem:    `SELECT * FROM items WHERE id = $1`,
-		listItem:   `SELECT * FROM items WHERE deleted_at IS NULL ORDER BY name ASC`,
-		updateItem: `UPDATE items SET name = $1, description = $2, price = $3, updated_at = NOW() WHERE id = $4 RETURNING *`,
+		createItem: `INSERT INTO 
+    		items (
+    		       name, 
+    		       description, 
+    		       price
+			) 
+			VALUES (
+			        :name, 
+			        :description, 
+			        :price
+			) 
+			RETURNING *`,
+		deleteItem: `UPDATE 
+    		items 
+		SET 
+			deleted_at = NOW() 
+		WHERE 
+			id = :id`,
+		getItem: `SELECT
+            i.id AS id,
+            i.name AS name,
+            i.description AS description,
+            i.price AS price,
+            i.created_at AS created_at,
+            i.updated_at AS updated_at,
+			i.deleted_at AS deleted_at,
+			c.id AS "categories_id", 
+			c.name AS "categories_name", 
+			c.created_at AS "categories_created_at", 
+			c.updated_at AS "categories_updated_at", 
+			c.deleted_at AS "categories_deleted_at"
+        FROM
+            items i
+        LEFT JOIN
+            item_categories ic ON i.id = ic.item_id
+        LEFT JOIN
+            categories c ON ic.category_id = c.id
+        WHERE
+            i.id = :id
+		AND i.deleted_at IS NULL`,
+		listItem: `SELECT
+					i.name,
+					i.id,
+					i.description,
+					i.price,
+					i.created_at,
+					i.updated_at,
+					c.id AS "categories_id", 
+					c.name AS "categories_name", 
+					c.created_at AS "categories_created_at", 
+					c.updated_at AS "categories_updated_at", 
+					c.deleted_at AS "categories_deleted_at"
+				FROM
+					items i
+				LEFT JOIN
+					item_categories ic ON i.id = ic.item_id
+				LEFT JOIN
+					categories c ON ic.category_id = c.id
+				WHERE
+					i.deleted_at IS NULL
+				ORDER BY
+					i.name`,
+		updateItem: `UPDATE 
+    		items 
+		SET 
+			name = :name, 
+			description = :description, 
+			price = :price, 
+			updated_at = NOW() 
+		 WHERE 
+		     id = :id
+		 RETURNING *`,
 	}
 }
 
 type ItemRepository struct {
 	DB         *sqlx.DB
-	statements map[string]*sqlx.Stmt
+	statements map[string]*sqlx.NamedStmt
 }
 
 func NewItemRepository(db *sqlx.DB) *ItemRepository {
-	sqlStatements := make(map[string]*sqlx.Stmt)
+	sqlStatements := make(map[string]*sqlx.NamedStmt)
 
 	var errs []error
 	for queryName, query := range queriesItem() {
-		stmt, err := db.Preparex(query)
+		stmt, err := db.PrepareNamed(query)
 		if err != nil {
 			log.Printf("error preparing statement %s: %v", queryName, err)
 			errs = append(errs, err)
@@ -56,7 +123,7 @@ func NewItemRepository(db *sqlx.DB) *ItemRepository {
 	}
 }
 
-func (r *ItemRepository) statement(query string) (*sqlx.Stmt, error) {
+func (r *ItemRepository) statement(query string) (*sqlx.NamedStmt, error) {
 	stmt, ok := r.statements[query]
 	if !ok {
 		return nil, fmt.Errorf("prepared statement '%s' not found", query)
@@ -71,7 +138,13 @@ func (r *ItemRepository) Create(item *domain.Item) error {
 		return err
 	}
 
-	if err := stmt.Get(item, item.Name, item.Description, item.Price); err != nil {
+	params := &QueryParams{
+		"name":        item.Name,
+		"description": item.Description,
+		"price":       item.Price,
+	}
+
+	if err := stmt.GetContext(context.Background(), item, params); err != nil {
 		return fmt.Errorf("error creating item: %v", err)
 	}
 
@@ -84,16 +157,13 @@ func (r *ItemRepository) Update(item *domain.Item) error {
 		return err
 	}
 
-	item.UpdatedAt = time.Now()
-
-	params := []interface{}{
-		item.Name,
-		item.Description,
-		item.Price,
-		item.ID,
+	params := &QueryParams{
+		"item":        item.Name,
+		"description": item.Description,
+		"price":       item.Price,
+		"id":          item.ID,
 	}
-
-	if err := stmt.Get(item, params...); err != nil {
+	if err := stmt.GetContext(context.Background(), item, params); err != nil {
 		return fmt.Errorf("error updating item")
 	}
 
@@ -106,7 +176,10 @@ func (r *ItemRepository) Delete(itemID int) error {
 		return err
 	}
 
-	if _, err := stmt.Exec(itemID); err != nil {
+	params := &QueryParams{
+		"id": itemID,
+	}
+	if _, err := stmt.ExecContext(context.Background(), params); err != nil {
 		return fmt.Errorf("error deleting item with id '%d'", itemID)
 	}
 
@@ -119,9 +192,25 @@ func (r *ItemRepository) Get(itemID int) (*domain.Item, error) {
 		return nil, err
 	}
 
-	item := &domain.Item{}
-	if err := stmt.Get(item, itemID); err != nil {
+	params := QueryParams{
+		"id": itemID,
+	}
+
+	rows, err := stmt.QueryxContext(context.Background(), params)
+	if err != nil {
 		return nil, fmt.Errorf("error getting the item with id '%d'", itemID)
+	}
+	defer func(rows *sqlx.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Printf("error to close rows: %v", err)
+		}
+	}(rows)
+
+	item := &domain.Item{}
+	err = carta.Map(rows.Rows, item)
+	if err != nil {
+		return nil, fmt.Errorf("unable to map result: %v", err)
 	}
 
 	return item, nil
@@ -133,9 +222,23 @@ func (r *ItemRepository) List() ([]*domain.Item, error) {
 		return nil, err
 	}
 
+	params := QueryParams{}
+
+	rows, err := stmt.QueryxContext(context.Background(), params)
+	if err != nil {
+		return nil, fmt.Errorf("error getting the item list")
+	}
+	defer func(rows *sqlx.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Printf("error to close rows: %v", err)
+		}
+	}(rows)
+
 	var items []*domain.Item
-	if err := stmt.Select(&items); err != nil {
-		return nil, fmt.Errorf("error getting items")
+	err = carta.Map(rows.Rows, &items)
+	if err != nil {
+		return nil, fmt.Errorf("unable to map results: %v", err)
 	}
 
 	return items, nil

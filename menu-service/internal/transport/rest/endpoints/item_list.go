@@ -18,6 +18,11 @@ func MakeListItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 			return
 		}
 
+		if len(items) == 0 {
+			sendErrorResponse(w, "Items not found", http.StatusNotFound)
+			return
+		}
+
 		payload := &ListItemResponse{
 			Items: items,
 		}
