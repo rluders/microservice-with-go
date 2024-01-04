@@ -20,17 +20,17 @@ const (
 func queriesItem() map[string]string {
 	return map[string]string{
 		createItem: `INSERT INTO 
-    		items (
-    		       name, 
-    		       description, 
-    		       price
+			items (
+				   name, 
+				   description, 
+				   price
 			) 
-			VALUES (
-			        :name, 
-			        :description, 
-			        :price
-			) 
-			RETURNING *`,
+		VALUES (
+				:name, 
+				:description, 
+				:price
+		) 
+		RETURNING *`,
 		deleteItem: `UPDATE 
     		items 
 		SET 
@@ -61,27 +61,27 @@ func queriesItem() map[string]string {
 		AND i.deleted_at IS NULL
 		ORDER BY c.name`,
 		listItem: `SELECT
-					i.name,
-					i.id,
-					i.description,
-					i.price,
-					i.created_at,
-					i.updated_at,
-					c.id AS "categories_id", 
-					c.name AS "categories_name", 
-					c.created_at AS "categories_created_at", 
-					c.updated_at AS "categories_updated_at", 
-					c.deleted_at AS "categories_deleted_at"
-				FROM
-					items i
-				LEFT JOIN
-					item_categories ic ON i.id = ic.item_id
-				LEFT JOIN
-					categories c ON ic.category_id = c.id
-				WHERE
-					i.deleted_at IS NULL
-				ORDER BY
-					i.name`,
+			i.name,
+			i.id,
+			i.description,
+			i.price,
+			i.created_at,
+			i.updated_at,
+			c.id AS "categories_id", 
+			c.name AS "categories_name", 
+			c.created_at AS "categories_created_at", 
+			c.updated_at AS "categories_updated_at", 
+			c.deleted_at AS "categories_deleted_at"
+		FROM
+			items i
+		LEFT JOIN
+			item_categories ic ON i.id = ic.item_id
+		LEFT JOIN
+			categories c ON ic.category_id = c.id
+		WHERE
+			i.deleted_at IS NULL
+		ORDER BY
+			i.name`,
 		updateItem: `UPDATE 
     		items 
 		SET 
@@ -96,45 +96,26 @@ func queriesItem() map[string]string {
 }
 
 type ItemRepository struct {
-	DB         *sqlx.DB
-	statements map[string]*sqlx.NamedStmt
+	*Repository
 }
 
 func NewItemRepository(db *sqlx.DB) *ItemRepository {
-	sqlStatements := make(map[string]*sqlx.NamedStmt)
-
-	var errs []error
-	for queryName, query := range queriesItem() {
-		stmt, err := db.PrepareNamed(query)
-		if err != nil {
-			log.Printf("error preparing statement %s: %v", queryName, err)
-			errs = append(errs, err)
-		}
-		sqlStatements[queryName] = stmt
-	}
-
-	if len(errs) > 0 {
+	stmts, err := prepareStatements(db, queriesItem())
+	if err != nil {
 		log.Fatalf("item repository wasn't able to build all the statements")
 		return nil
 	}
 
 	return &ItemRepository{
-		DB:         db,
-		statements: sqlStatements,
+		&Repository{
+			statements: stmts,
+			DB:         db,
+		},
 	}
-}
-
-func (r *ItemRepository) statement(query string) (*sqlx.NamedStmt, error) {
-	stmt, ok := r.statements[query]
-	if !ok {
-		return nil, fmt.Errorf("prepared statement '%s' not found", query)
-	}
-
-	return stmt, nil
 }
 
 func (r *ItemRepository) Create(item *domain.Item) error {
-	stmt, err := r.statement(createItem)
+	stmt, err := r.Statement(createItem)
 	if err != nil {
 		return err
 	}
@@ -153,7 +134,7 @@ func (r *ItemRepository) Create(item *domain.Item) error {
 }
 
 func (r *ItemRepository) Update(item *domain.Item) error {
-	stmt, err := r.statement(updateItem)
+	stmt, err := r.Statement(updateItem)
 	if err != nil {
 		return err
 	}
@@ -172,7 +153,7 @@ func (r *ItemRepository) Update(item *domain.Item) error {
 }
 
 func (r *ItemRepository) Delete(itemID int) error {
-	stmt, err := r.statement(deleteItem)
+	stmt, err := r.Statement(deleteItem)
 	if err != nil {
 		return err
 	}
@@ -188,7 +169,7 @@ func (r *ItemRepository) Delete(itemID int) error {
 }
 
 func (r *ItemRepository) Get(itemID int) (*domain.Item, error) {
-	stmt, err := r.statement(getItem)
+	stmt, err := r.Statement(getItem)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +199,7 @@ func (r *ItemRepository) Get(itemID int) (*domain.Item, error) {
 }
 
 func (r *ItemRepository) List() ([]*domain.Item, error) {
-	stmt, err := r.statement(listItem)
+	stmt, err := r.Statement(listItem)
 	if err != nil {
 		return nil, err
 	}

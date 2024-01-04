@@ -36,31 +36,21 @@ func queriesCategory() map[string]string {
 }
 
 type CategoryRepository struct {
-	DB         *sqlx.DB
-	statements map[string]*sqlx.NamedStmt
+	*Repository
 }
 
 func NewCategoryRepository(db *sqlx.DB) *CategoryRepository {
-	sqlStatements := make(map[string]*sqlx.NamedStmt)
-
-	var errs []error
-	for queryName, query := range queriesCategory() {
-		stmt, err := db.PrepareNamed(query)
-		if err != nil {
-			log.Printf("error preparing statement %s: %v", queryName, err)
-			errs = append(errs, err)
-		}
-		sqlStatements[queryName] = stmt
-	}
-
-	if len(errs) > 0 {
+	stmts, err := prepareStatements(db, queriesCategory())
+	if err != nil {
 		log.Fatalf("category repository wasn't able to build all the statements")
 		return nil
 	}
 
 	return &CategoryRepository{
-		DB:         db,
-		statements: sqlStatements,
+		&Repository{
+			statements: stmts,
+			DB:         db,
+		},
 	}
 }
 
