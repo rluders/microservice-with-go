@@ -14,12 +14,12 @@ func MakeListCategoryEndpoint(categoryService *domain.CategoryService) http.Hand
 	return func(w http.ResponseWriter, r *http.Request) {
 		categories, err := categoryService.List()
 		if err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		if len(categories) == 0 {
-			sendErrorResponse(w, "Categories not found", http.StatusNotFound)
+			sendResponse(w, "Categories not found", http.StatusNotFound)
 			return
 		}
 

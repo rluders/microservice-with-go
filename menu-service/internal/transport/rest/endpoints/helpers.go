@@ -11,9 +11,9 @@ import (
 )
 
 type Response struct {
-	StatusCode int         `json:"status_code"`
-	Message    string      `json:"message"`
-	Payload    interface{} `json:"payload,omitempty"`
+	StatusCode int    `json:"status_code"`
+	Message    string `json:"message"`
+	Payload    any    `json:"payload,omitempty"`
 }
 
 func (r *Response) Marshal() []byte {
@@ -40,7 +40,7 @@ func sendValidationError(w http.ResponseWriter, err error) {
 	response := &Response{
 		StatusCode: http.StatusBadRequest,
 		Message:    "Validation error",
-		Payload: map[string]interface{}{
+		Payload: map[string]any{
 			"errors": fieldErrors,
 		},
 	}
@@ -48,16 +48,7 @@ func sendValidationError(w http.ResponseWriter, err error) {
 	writeResponse(w, response)
 }
 
-func sendErrorResponse(w http.ResponseWriter, message string, statusCode int) {
-	response := &Response{
-		StatusCode: statusCode,
-		Message:    message,
-	}
-
-	writeResponse(w, response)
-}
-
-func sendDataResponse[T interface{}](w http.ResponseWriter, message string, statusCode int, payload *T) {
+func sendDataResponse[T any](w http.ResponseWriter, message string, statusCode int, payload *T) {
 	response := &Response{
 		StatusCode: statusCode,
 		Message:    message,
@@ -89,14 +80,14 @@ func writeResponse(w http.ResponseWriter, r *Response) {
 	}
 }
 
-func parseRequest[T interface{}](r *T, body io.ReadCloser) error {
+func parseRequest[T any](r *T, body io.ReadCloser) error {
 	if err := json.NewDecoder(body).Decode(&r); err != nil {
 		return err
 	}
 	return nil
 }
 
-func isRequestValid(request interface{}) error {
+func isRequestValid(request any) error {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	return validate.Struct(request)
 }

@@ -22,13 +22,13 @@ func MakeUpdateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 		vars := mux.Vars(r)
 		idStr, ok := vars["id"]
 		if !ok {
-			sendErrorResponse(w, "ID not found in request", http.StatusBadRequest)
+			sendResponse(w, "ID not found in request", http.StatusBadRequest)
 			return
 		}
 
 		categoryID, err := strconv.Atoi(idStr)
 		if err != nil {
-			sendErrorResponse(w, "Invalid ID format", http.StatusBadRequest)
+			sendResponse(w, "Invalid ID format", http.StatusBadRequest)
 			return
 		}
 
@@ -37,7 +37,7 @@ func MakeUpdateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 		}
 
 		if err := parseRequest(request, r.Body); err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -48,7 +48,7 @@ func MakeUpdateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 
 		category := &domain.Category{ID: request.ID, Name: request.Name}
 		if err := categoryService.Update(category); err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 

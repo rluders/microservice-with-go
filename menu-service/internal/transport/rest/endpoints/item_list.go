@@ -14,12 +14,12 @@ func MakeListItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		items, err := itemService.List()
 		if err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		if len(items) == 0 {
-			sendErrorResponse(w, "Items not found", http.StatusNotFound)
+			sendResponse(w, "Items not found", http.StatusNotFound)
 			return
 		}
 

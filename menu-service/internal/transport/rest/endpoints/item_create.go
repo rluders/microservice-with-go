@@ -22,7 +22,7 @@ func MakeCreateItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 		request := &CreateItemRequest{}
 
 		if err := parseRequest(request, r.Body); err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -44,7 +44,7 @@ func MakeCreateItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 		//}
 
 		if err := itemService.Create(item); err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 

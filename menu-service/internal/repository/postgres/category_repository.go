@@ -77,7 +77,7 @@ func (r *CategoryRepository) Create(category *domain.Category) error {
 		if isUniqueViolationError(err) {
 			return fmt.Errorf("category with name '%s' already exists", category.Name)
 		}
-		return fmt.Errorf("error creating category: %v", err)
+		return fmt.Errorf("error creating category: %w", err)
 	}
 
 	return nil

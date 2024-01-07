@@ -19,7 +19,7 @@ func MakeCreateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 		request := &CreateCategoryRequest{}
 
 		if err := parseRequest(request, r.Body); err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -30,7 +30,7 @@ func MakeCreateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 
 		category := &domain.Category{Name: request.Name}
 		if err := categoryService.Create(category); err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 

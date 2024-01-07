@@ -6,7 +6,7 @@ import (
 )
 
 // QueryParams is used to define the params to StmtNamed queries
-type QueryParams map[string]interface{}
+type QueryParams map[string]any
 
 // Helper function to check if the error is a UNIQUE constraint violation
 func isUniqueViolationError(err error) bool {

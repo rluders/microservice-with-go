@@ -21,13 +21,13 @@ func MakeGetItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 		vars := mux.Vars(r)
 		idStr, ok := vars["id"]
 		if !ok {
-			sendErrorResponse(w, "ID not found in request", http.StatusBadRequest)
+			sendResponse(w, "ID not found in request", http.StatusBadRequest)
 			return
 		}
 
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			sendErrorResponse(w, "Invalid ID format", http.StatusBadRequest)
+			sendResponse(w, "Invalid ID format", http.StatusBadRequest)
 			return
 		}
 
@@ -40,7 +40,7 @@ func MakeGetItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 
 		item, err := itemService.Get(request.ID)
 		if err != nil {
-			sendErrorResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 

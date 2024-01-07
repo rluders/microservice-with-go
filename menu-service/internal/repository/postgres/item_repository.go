@@ -127,7 +127,7 @@ func (r *ItemRepository) Create(item *domain.Item) error {
 	}
 
 	if err := stmt.GetContext(context.Background(), item, params); err != nil {
-		return fmt.Errorf("error creating item: %v", err)
+		return fmt.Errorf("error creating item: %w", err)
 	}
 
 	return nil
@@ -183,7 +183,7 @@ func (r *ItemRepository) Get(itemID int) (*domain.Item, error) {
 		return nil, fmt.Errorf("error getting the item with id '%d'", itemID)
 	}
 	defer func(rows *sqlx.Rows) {
-		err := rows.Close()
+		err = rows.Close()
 		if err != nil {
 			log.Printf("error to close rows: %v", err)
 		}
@@ -192,7 +192,7 @@ func (r *ItemRepository) Get(itemID int) (*domain.Item, error) {
 	item := &domain.Item{}
 	err = carta.Map(rows.Rows, item)
 	if err != nil {
-		return nil, fmt.Errorf("unable to map result: %v", err)
+		return nil, fmt.Errorf("unable to map result: %w", err)
 	}
 
 	return item, nil
@@ -220,7 +220,7 @@ func (r *ItemRepository) List() ([]*domain.Item, error) {
 	var items []*domain.Item
 	err = carta.Map(rows.Rows, &items)
 	if err != nil {
-		return nil, fmt.Errorf("unable to map results: %v", err)
+		return nil, fmt.Errorf("unable to map results: %w", err)
 	}
 
 	return items, nil

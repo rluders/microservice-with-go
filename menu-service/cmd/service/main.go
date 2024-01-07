@@ -20,6 +20,8 @@ import (
 	"menu-service/internal/transport/rest"
 )
 
+const shutdownTimeout = 5
+
 func main() {
 	log.Println("service starting")
 
@@ -79,7 +81,7 @@ func main() {
 
 	log.Println("shutdown signal received")
 
-	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), shutdownTimeout*time.Second)
 	defer shutdownCancel()
 
 	if restServer != nil {
