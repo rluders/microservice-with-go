@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Category represents a category entity with its associated properties.
 type Category struct {
 	ID        int        `json:"id" db:"id"`
 	Name      string     `json:"name" db:"name"`

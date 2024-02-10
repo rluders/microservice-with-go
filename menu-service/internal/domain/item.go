@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Item represents an item entity with its associated properties.
 type Item struct {
 	ID          int         `json:"id" db:"id"`
 	Name        string      `json:"name" db:"name"`

@@ -22,39 +22,38 @@ func MakeUpdateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 		vars := mux.Vars(r)
 		idStr, ok := vars["id"]
 		if !ok {
-			sendResponse(w, "ID not found in request", http.StatusBadRequest)
+			sendResponse[any](w, "ID not found in request", http.StatusBadRequest, nil)
 			return
 		}
 
 		categoryID, err := strconv.Atoi(idStr)
 		if err != nil {
-			sendResponse(w, "Invalid ID format", http.StatusBadRequest)
+			sendResponse[any](w, "Invalid ID format", http.StatusBadRequest, nil)
 			return
 		}
 
 		request := &UpdateCategoryRequest{
 			ID: categoryID,
 		}
-
 		if err := parseRequest(request, r.Body); err != nil {
-			sendResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse[any](w, err.Error(), http.StatusBadRequest, nil)
 			return
 		}
 
 		if err := isRequestValid(request); err != nil {
-			sendValidationError(w, err)
+			sendResponse[ValidationErrors](w, "Validation error", http.StatusBadRequest, err)
 			return
 		}
 
 		category := &domain.Category{ID: request.ID, Name: request.Name}
 		if err := categoryService.Update(category); err != nil {
-			sendResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse[any](w, err.Error(), http.StatusBadRequest, nil)
 			return
 		}
 
-		payload := &UpdateCategoryResponse{
+		body := &UpdateCategoryResponse{
 			Category: category,
 		}
-		sendDataResponse[UpdateCategoryResponse](w, "Category updated", http.StatusOK, payload)
+		sendResponse[UpdateCategoryResponse](w, "Category updated", http.StatusOK, body)
 	}
 }

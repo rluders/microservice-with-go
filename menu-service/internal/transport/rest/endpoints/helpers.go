@@ -11,9 +11,9 @@ import (
 )
 
 type Response struct {
-	StatusCode int    `json:"status_code"`
-	Message    string `json:"message"`
-	Payload    any    `json:"payload,omitempty"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Body    any    `json:"body,omitempty"`
 }
 
 func (r *Response) Marshal() []byte {
@@ -25,7 +25,11 @@ func (r *Response) Marshal() []byte {
 	return jsonResponse
 }
 
-func sendValidationError(w http.ResponseWriter, err error) {
+type ValidationErrors struct {
+	Errors map[string][]string `json:"errors,omitempty"`
+}
+
+func NewValidationErrors(err error) *ValidationErrors {
 	var validationErrors validator.ValidationErrors
 	errors.As(err, &validationErrors)
 
@@ -37,31 +41,24 @@ func sendValidationError(w http.ResponseWriter, err error) {
 		fieldErrors[fieldName] = append(fieldErrors[fieldName], fieldError)
 	}
 
-	response := &Response{
-		StatusCode: http.StatusBadRequest,
-		Message:    "Validation error",
-		Payload: map[string]any{
-			"errors": fieldErrors,
-		},
-	}
-
-	writeResponse(w, response)
+	return &ValidationErrors{Errors: fieldErrors}
 }
 
-func sendDataResponse[T any](w http.ResponseWriter, message string, statusCode int, payload *T) {
-	response := &Response{
-		StatusCode: statusCode,
-		Message:    message,
-		Payload:    payload,
+func isRequestValid(request any) *ValidationErrors {
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	err := validate.Struct(request)
+	if err != nil {
+		return NewValidationErrors(err)
 	}
 
-	writeResponse(w, response)
+	return nil
 }
 
-func sendResponse(w http.ResponseWriter, message string, statusCode int) {
+func sendResponse[T any](w http.ResponseWriter, message string, code int, body *T) {
 	response := &Response{
-		StatusCode: statusCode,
-		Message:    message,
+		Code:    code,
+		Message: message,
+		Body:    body,
 	}
 
 	writeResponse(w, response)
@@ -71,12 +68,13 @@ func writeResponse(w http.ResponseWriter, r *Response) {
 	jsonResponse := r.Marshal()
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(r.StatusCode)
+	w.WriteHeader(r.Code)
 
 	_, err := w.Write(jsonResponse)
 	if err != nil {
 		log.Printf("Error writing response: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -85,9 +83,4 @@ func parseRequest[T any](r *T, body io.ReadCloser) error {
 		return err
 	}
 	return nil
-}
-
-func isRequestValid(request any) error {
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	return validate.Struct(request)
 }

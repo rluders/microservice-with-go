@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -28,7 +29,12 @@ func TestMakeUpdateItemEndpoint(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}(resp.Body)
 
 	// Assert that the response status code is http.StatusInternalServerError (500).
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)

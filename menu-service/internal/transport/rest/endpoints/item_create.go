@@ -22,12 +22,12 @@ func MakeCreateItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 		request := &CreateItemRequest{}
 
 		if err := parseRequest(request, r.Body); err != nil {
-			sendResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse[any](w, err.Error(), http.StatusBadRequest, nil)
 			return
 		}
 
 		if err := isRequestValid(request); err != nil {
-			sendValidationError(w, err)
+			sendResponse[ValidationErrors](w, "Validation error", http.StatusBadRequest, err)
 			return
 		}
 
@@ -44,13 +44,13 @@ func MakeCreateItemEndpoint(itemService *domain.ItemService) http.HandlerFunc {
 		//}
 
 		if err := itemService.Create(item); err != nil {
-			sendResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse[any](w, err.Error(), http.StatusBadRequest, nil)
 			return
 		}
 
-		payload := &CreateItemResponse{
+		body := &CreateItemResponse{
 			Item: item,
 		}
-		sendDataResponse[CreateItemResponse](w, "Item created", http.StatusCreated, payload)
+		sendResponse[CreateItemResponse](w, "Item created", http.StatusCreated, body)
 	}
 }

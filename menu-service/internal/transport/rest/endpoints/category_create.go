@@ -19,24 +19,24 @@ func MakeCreateCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 		request := &CreateCategoryRequest{}
 
 		if err := parseRequest(request, r.Body); err != nil {
-			sendResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse[any](w, err.Error(), http.StatusBadRequest, nil)
 			return
 		}
 
 		if err := isRequestValid(request); err != nil {
-			sendValidationError(w, err)
+			sendResponse[ValidationErrors](w, "Validation error", http.StatusBadRequest, err)
 			return
 		}
 
 		category := &domain.Category{Name: request.Name}
 		if err := categoryService.Create(category); err != nil {
-			sendResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse[any](w, err.Error(), http.StatusBadRequest, nil)
 			return
 		}
 
-		payload := &CreateCategoryResponse{
+		body := &CreateCategoryResponse{
 			Category: category,
 		}
-		sendDataResponse[CreateCategoryResponse](w, "Category created", http.StatusCreated, payload)
+		sendResponse[CreateCategoryResponse](w, "Category created", http.StatusCreated, body)
 	}
 }

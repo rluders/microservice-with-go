@@ -43,8 +43,7 @@ func (s *ItemService) Create(item *Item) error {
 			return errors.Wrap(err, "Unable to begin transaction")
 		}
 		defer func() {
-			err := tx.Rollback()
-			if err != nil {
+			if err = tx.Rollback(); err != nil {
 				log.Printf("Fail to rollback item creation transaction: %v", err)
 			}
 		}()

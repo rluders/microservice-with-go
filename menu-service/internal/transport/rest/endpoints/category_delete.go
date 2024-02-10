@@ -17,28 +17,27 @@ func MakeDeleteCategoryEndpoint(categoryService *domain.CategoryService) http.Ha
 		vars := mux.Vars(r)
 		idStr, ok := vars["id"]
 		if !ok {
-			sendResponse(w, "ID not found in request", http.StatusBadRequest)
+			sendResponse[any](w, "ID not found in request", http.StatusBadRequest, nil)
 			return
 		}
 
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			sendResponse(w, "Invalid ID format", http.StatusBadRequest)
+			sendResponse[any](w, "Invalid ID format", http.StatusBadRequest, nil)
 			return
 		}
 
 		request := &DeleteCategoryRequest{ID: id}
-
 		if err := isRequestValid(request); err != nil {
-			sendValidationError(w, err)
+			sendResponse[ValidationErrors](w, "Validation error", http.StatusBadRequest, nil)
 			return
 		}
 
 		if err := categoryService.Delete(request.ID); err != nil {
-			sendResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse[any](w, err.Error(), http.StatusBadRequest, nil)
 			return
 		}
 
-		sendResponse(w, "Category deleted", http.StatusOK)
+		sendResponse[any](w, "Category deleted", http.StatusOK, nil)
 	}
 }

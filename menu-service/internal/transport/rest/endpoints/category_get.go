@@ -21,32 +21,31 @@ func MakeGetCategoryEndpoint(categoryService *domain.CategoryService) http.Handl
 		vars := mux.Vars(r)
 		idStr, ok := vars["id"]
 		if !ok {
-			sendResponse(w, "ID not found in request", http.StatusBadRequest)
+			sendResponse[any](w, "ID not found in request", http.StatusBadRequest, nil)
 			return
 		}
 
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			sendResponse(w, "Invalid ID format", http.StatusBadRequest)
+			sendResponse[any](w, "Invalid ID format", http.StatusBadRequest, nil)
 			return
 		}
 
 		request := &GetCategoryRequest{ID: id}
-
 		if err := isRequestValid(request); err != nil {
-			sendValidationError(w, err)
+			sendResponse[ValidationErrors](w, "Validation error", http.StatusBadRequest, err)
 			return
 		}
 
 		category, err := categoryService.Get(request.ID)
 		if err != nil {
-			sendResponse(w, err.Error(), http.StatusBadRequest)
+			sendResponse[any](w, err.Error(), http.StatusBadRequest, nil)
 			return
 		}
 
-		payload := &GetCategoryResponse{
+		body := &GetCategoryResponse{
 			Category: category,
 		}
-		sendDataResponse[GetCategoryResponse](w, "Category found", http.StatusOK, payload)
+		sendResponse[GetCategoryResponse](w, "Category found", http.StatusOK, body)
 	}
 }
